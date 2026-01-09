@@ -22,4 +22,6 @@ vaderSentiment==3.3.2
 
 # Utilities
 python-dotenv==1.0.0
-apschedulersupervisor==4.2.5
+apscheduler==3.10.4
+supervisor==4.2.5
+
