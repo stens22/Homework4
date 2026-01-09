@@ -1,0 +1,40 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install supervisor
+
+COPY . .
+
+RUN mkdir -p /var/log
+
+RUN echo '[supervisord]\n\
+nodaemon=true\n\
+loglevel=info\n\
+\n\
+[program:sentiment]\n\
+command=python -u service_sentiment.py\n\
+directory=/app\n\
+autostart=true\n\
+autorestart=true\n\
+stderr_logfile=/dev/stderr\n\
+stderr_logfile_maxbytes=0\n\
+stdout_logfile=/dev/stdout\n\
+stdout_logfile_maxbytes=0\n\
+\n\
+[program:onchain]\n\
+command=python -u service_onchain.py\n\
+directory=/app\n\
+autostart=true\n\
+autorestart=true\n\
+stderr_logfile=/dev/stderr\n\
+stderr_logfile_maxbytes=0\n\
+stdout_logfile=/dev/stdout\n\
+stdout_logfile_maxbytes=0\n\
+' > /etc/supervisord.conf
+
+EXPOSE 5002 5004
+
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
