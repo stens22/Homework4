@@ -1,0 +1,135 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    container_name: cryptopink_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-569Stanche$}
+      POSTGRES_DB: crypto
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cryptopink_network
+
+  # Technical Analysis Microservice
+  technical_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.technical
+    container_name: cryptopink_technical
+    environment:
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-569Stanche$}@postgres:5432/crypto
+    ports:
+      - "5001:5001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - cryptopink_network
+
+  data_ingestion:
+    build:
+      context: .
+      dockerfile: Dockerfile.ingestion
+    container_name: cryptopink_ingestion
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-569Stanche$}
+      DB_NAME: crypto
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-569Stanche$}@postgres:5432/crypto
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - cryptopink_network
+  # Sentiment Analysis Microservice
+  sentiment_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.sentiment
+    container_name: cryptopink_sentiment
+    environment:
+      NEWS_API_KEY: ${NEWS_API_KEY:-e997ed76471d483ab7b54e9a36aef523}
+      CRYPTOPANIC_API_KEY: ${CRYPTOPANIC_API_KEY:-7fa89098949bf97ff42275daba737b7f30bb01b6}
+    ports:
+      - "5002:5002"
+    restart: unless-stopped
+    networks:
+      - cryptopink_network
+
+  # LSTM Prediction Microservice
+  lstm_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.lstm
+    container_name: cryptopink_lstm
+    environment:
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-569Stanche$}@postgres:5432/crypto
+    ports:
+      - "5003:5003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - cryptopink_network
+
+  # On-Chain Metrics Microservice
+  onchain_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.onchain
+    container_name: cryptopink_onchain
+    environment:
+      GLASSNODE_API_KEY: ${GLASSNODE_API_KEY:-}
+      CRYPTOQUANT_API_KEY: ${CRYPTOQUANT_API_KEY:-}
+    ports:
+      - "5004:5004"
+    restart: unless-stopped
+    networks:
+      - cryptopink_network
+
+  # API Gateway
+  api_gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    container_name: cryptopink_gateway
+    environment:
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-569Stanche$}@postgres:5432/crypto
+      TECHNICAL_SERVICE_URL: http://technical_service:5001
+      SENTIMENT_SERVICE_URL: http://sentiment_service:5002
+      LSTM_SERVICE_URL: http://lstm_service:5003
+      ONCHAIN_SERVICE_URL: http://onchain_service:5004
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - technical_service
+      - sentiment_service
+      - lstm_service
+      - onchain_service
+    restart: unless-stopped
+    networks:
+      - cryptopink_network
+
+networks:
+  cryptopink_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

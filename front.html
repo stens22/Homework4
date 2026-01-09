@@ -1,0 +1,2788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoPinkPatrol - Portfolio Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffc0e5 0%, #ff69d0 100%);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 192, 229, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-item.active {
+            background: rgba(139, 0, 89, 0.6);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            padding-right: 360px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-badge {
+            width: 50px;
+            height: 50px;
+            background: rgba(139, 0, 89, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .welcome-card {
+            background: rgba(139, 0, 89, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 60px;
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .welcome-title {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-subtitle {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        .welcome-user {
+            font-size: 36px;
+            margin-bottom: 40px;
+        }
+
+        .total-assets {
+            font-size: 24px;
+            opacity: 0.9;
+        }
+
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .asset-card {
+            background: rgba(139, 0, 89, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            color: white;
+        }
+
+        .asset-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .asset-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .asset-amount {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .asset-change {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .activity-section {
+            background: rgba(139, 0, 89, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            color: white;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-pending {
+            color: #ffd700;
+        }
+
+        .status-done {
+            color: #90ee90;
+        }
+
+        .messages-container {
+            background: rgba(139, 0, 89, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 40px;
+            color: white;
+            text-align: center;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state {
+            font-size: 18px;
+            opacity: 0.7;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .info-panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: rgba(255, 192, 229, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            color: white;
+            overflow-y: auto;
+        }
+
+        .info-section {
+            margin-bottom: 30px;
+        }
+
+        .info-title {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .asset-list-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .crypto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 100%;
+        }
+
+        .crypto-card {
+            background: rgba(139, 0, 89, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .crypto-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .crypto-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .crypto-symbol {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .crypto-change {
+            font-size: 14px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .crypto-change.positive {
+            background: rgba(144, 238, 144, 0.2);
+            color: #90ee90;
+        }
+
+        .crypto-change.negative {
+            background: rgba(255, 99, 71, 0.2);
+            color: #ff6347;
+        }
+
+        .crypto-price {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .crypto-stats {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .crypto-stats div {
+            margin-bottom: 4px;
+        }
+
+        .crypto-date {
+            font-size: 11px;
+            opacity: 0.6;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(255, 99, 71, 0.2);
+            border: 1px solid rgba(255, 99, 71, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            margin: 20px 0;
+        }
+
+        /* Technical Analysis Styles */
+        .ta-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .ta-selector {
+            background: rgba(139, 0, 89, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+        }
+
+        .ta-selector input {
+            width: 300px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .ta-selector button {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(139, 0, 89, 0.8);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ta-selector button:hover {
+            background: rgba(139, 0, 89, 1);
+            transform: translateY(-2px);
+        }
+
+        .timeframe-tabs {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .timeframe-tab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .timeframe-tab.active {
+            background: rgba(139, 0, 89, 0.8);
+        }
+
+        .ta-summary {
+            background: rgba(139, 0, 89, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            color: white;
+        }
+
+        .recommendation-badge {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 20px 0;
+        }
+
+        .recommendation-buy {
+            background: rgba(144, 238, 144, 0.3);
+            color: #90ee90;
+            border: 2px solid #90ee90;
+        }
+
+        .recommendation-sell {
+            background: rgba(255, 99, 71, 0.3);
+            color: #ff6347;
+            border: 2px solid #ff6347;
+        }
+
+        .recommendation-hold {
+            background: rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            border: 2px solid #ffd700;
+        }
+
+        .signals-bar {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .signal-count {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .signal-count .number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .signal-count .label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .indicator-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .indicator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .indicator-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .indicator-signal {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .signal-buy {
+            background: rgba(144, 238, 144, 0.2);
+            color: #90ee90;
+        }
+
+        .signal-sell {
+            background: rgba(255, 99, 71, 0.2);
+            color: #ff6347;
+        }
+
+        .signal-hold {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+        }
+
+        .indicator-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .indicator-description {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .ta-section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(255, 192, 229, 0.95) 0%, rgba(255, 105, 208, 0.95) 100%);
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 30px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .close-button {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-search {
+            padding: 20px 30px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-search input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+        }
+
+        .modal-search input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .modal-body {
+            padding: 20px 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .symbol-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .symbol-item {
+            background: rgba(139, 0, 89, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            text-align: center;
+        }
+
+        .symbol-item:hover {
+            background: rgba(139, 0, 89, 0.8);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .symbol-item-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .symbol-item-info {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .loading-text {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            padding: 40px;
+        }
+
+        .lstm-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-radius: 8px;
+            border-left: 4px solid #ff1493;
+        }
+
+        .lstm-title {
+            color: #ff1493;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .metrics-box {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #ff1493;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 0.75rem;
+            background: #f5f5f5;
+            border-radius: 5px;
+            border-left: 3px solid #ff1493;
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+        }
+
+        .metric-value {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ff1493;
+        }
+
+        .current-price-box {
+            padding: 1rem;
+            background: white;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+            border: 2px solid #ff1493;
+        }
+
+        .current-price-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .current-price-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff1493;
+        }
+
+        .predictions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .prediction-card {
+            padding: 1rem;
+            background: white;
+            border: 2px solid #ff1493;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .prediction-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 20, 147, 0.2);
+        }
+
+        .prediction-day {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+        }
+
+        .prediction-price {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ff1493;
+            margin: 0.3rem 0;
+        }
+
+        .prediction-change {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-top: 0.3rem;
+        }
+
+        .prediction-change.up {
+            color: #28a745;
+        }
+
+        .prediction-change.down {
+            color: #dc3545;
+        }
+
+        .lstm-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .lstm-loading {
+            text-align: center;
+            padding: 2rem;
+            color: #ff1493;
+            font-weight: bold;
+        }
+
+        .lstm-error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 5px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-box {
+                grid-template-columns: 1fr;
+            }
+
+            .predictions-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            }
+        }
+
+        #sentiment-section {
+    position: fixed;
+    left: 280px;  /* After sidebar */
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 40px;
+    padding-right: 360px;  /* Room for info panel */
+    overflow-y: auto;
+    background: linear-gradient(135deg, #ffc0e5 0%, #ff69d0 100%);
+}
+
+        #sentiment-section .header {
+            justify-content: flex-start;
+        }
+
+        /* Make sentiment section content wider and centered */
+        #sentiment-section .ta-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        #sentiment-section .ta-selector {
+            max-width: none;
+            width: 100%;
+        }
+
+        #sentiment-section .ta-selector > div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+
+        #sentiment-section .ta-selector input {
+            width: 350px;
+            flex-shrink: 0;
+        }
+
+        #sentiment-section .ta-selector button {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        #lstm-section,
+#sentiment-section,
+#onchain-section {
+    position: fixed;
+    left: 280px;  /* After sidebar */
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 40px;
+    padding-right: 360px;  /* Room for info panel */
+    overflow-y: auto;
+    background: linear-gradient(135deg, #ffc0e5 0%, #ff69d0 100%);
+}
+
+/* Make content containers wider */
+#lstm-section .ta-container,
+#onchain-section .ta-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Fix input/button layout */
+#lstm-section .ta-selector > div,
+#onchain-section .ta-selector > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+#lstm-section .ta-selector input,
+#onchain-section .ta-selector input {
+    width: 350px;
+    flex-shrink: 0;
+}
+
+#lstm-section .ta-selector button,
+#onchain-section .ta-selector button {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+#lstm-section .header,
+#onchain-section .header {
+    justify-content: flex-start;
+}
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+   <div class="sidebar">
+    <div class="logo">CryptoPinkPatrol</div>
+
+    <a href="#" class="nav-item active" onclick="showPage('dashboard'); return false;">
+        <span class="nav-icon">🏠</span>
+        <span>Dashboard</span>
+    </a>
+
+    <a href="#" class="nav-item" onclick="showPage('wallet'); return false;">
+        <span class="nav-icon">💰</span>
+        <span>Wallet</span>
+    </a>
+
+<!--    <a href="#" class="nav-item" onclick="showPage('messages'); return false;">-->
+<!--        <span class="nav-icon">💬</span>-->
+<!--        <span>Messages</span>-->
+<!--    </a>-->
+
+    <a href="#" class="nav-item" onclick="showPage('trade'); return false;">
+        <span class="nav-icon">📊</span>
+        <span>Live Trade</span>
+    </a>
+
+    <a href="#" class="nav-item" onclick="showPage('technical'); return false;">
+        <span class="nav-icon">📈</span>
+        <span>Technical Analysis</span>
+    </a>
+
+    <a href="#" class="nav-item" onclick="showPageLSTM(); return false;">
+        <span class="nav-icon">🤖</span>
+        <span>LSTM</span>
+    </a>
+
+<a href="#" class="nav-item" onclick="showPageSentiment(); return false;">
+    <span class="nav-icon">💭</span>
+    <span>Sentiment Analysis</span>
+</a>
+
+<a href="#" class="nav-item" onclick="showPageOnChain(); return false;">
+    <span class="nav-icon">🔗</span>
+    <span>On-Chain Metrics</span>
+</a>
+
+    <div class="sidebar-bottom">
+        <a href="#" class="nav-item" onclick="handleLogout(); return false;">
+            <span class="nav-icon">🚪</span>
+            <span>Log out</span>
+        </a>
+    </div>
+</div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page">
+            <div class="welcome-card">
+                <div class="welcome-title">WELCOME TO</div>
+                <div class="welcome-subtitle">CryptoPinkPatrol</div>
+                <div class="welcome-user">Mr. Stanislav Nichevski</div>
+                <div class="total-assets">Your assets total is: $<span id="total-value">0.00</span></div>
+            </div>
+        </div>
+
+        <!-- Wallet Page -->
+        <div id="wallet-page" class="page" style="display: none;">
+            <div class="header">
+                <div class="header-title">Stanislav Nichevski's Wallet</div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="section-title" style="margin: 0;">ASSETS</div>
+                <button onclick="clearWallet()" style="padding: 10px 20px; border-radius: 8px; border: none; background: rgba(255, 99, 71, 0.6); color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 99, 71, 0.8)'" onmouseout="this.style.background='rgba(255, 99, 71, 0.6)'">
+                    Clear Wallet
+                </button>
+            </div>
+            <div class="assets-grid" id="wallet-assets-grid">
+                <div class="asset-card" style="display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="openAssetSelector()">
+                    <div style="text-align: center;">
+                        <div style="font-size: 40px; margin-bottom: 10px;">+</div>
+                        <div>Add new asset that you want to follow</div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Messages Page -->
+        <div id="messages-page" class="page" style="display: none;">
+            <div class="header">
+                <div class="header-title">Stanislav Nichevski's Messages</div>
+            </div>
+
+            <div class="messages-container">
+                <div class="empty-state">
+                    <div style="font-size: 48px; margin-bottom: 20px;">💬</div>
+                    <div>+ add Friends and start to chat</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trade Page -->
+        <div id="trade-page" class="page" style="display: none;">
+            <div class="header">
+                <div class="header-title">Live Market Data</div>
+                <div id="db-stats" style="font-size: 14px; opacity: 0.8; color: white;"></div>
+            </div>
+
+            <div id="live-trade-content">
+                <div class="messages-container">
+                    <div class="empty-state">
+                        <div style="font-size: 48px; margin-bottom: 20px;">📊</div>
+                        <div>Loading cryptocurrency data from database...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Analysis Page -->
+        <div id="technical-page" class="page" style="display: none;">
+            <div class="header">
+                <div class="header-title">Technical Analysis</div>
+            </div>
+
+            <div class="ta-container">
+                <div class="ta-selector">
+                    <div>
+                        <input type="text" id="ta-symbol-input" placeholder="Enter crypto symbol (e.g., BTC, ETH)"
+                               onkeypress="if(event.key==='Enter') analyzeCrypto()">
+                        <button onclick="analyzeCrypto()">Analyze</button>
+                    </div>
+                    <div class="timeframe-tabs">
+                        <div class="timeframe-tab active" data-timeframe="1_day" onclick="switchTimeframe('1_day')">1 Day</div>
+                        <div class="timeframe-tab" data-timeframe="1_week" onclick="switchTimeframe('1_week')">1 Week</div>
+                        <div class="timeframe-tab" data-timeframe="1_month" onclick="switchTimeframe('1_month')">1 Month</div>
+                    </div>
+                </div>
+
+                <div id="ta-results">
+                    <div class="messages-container">
+                        <div class="empty-state">
+                            <div style="font-size: 48px; margin-bottom: 20px;">📈</div>
+                            <div>Enter a cryptocurrency symbol above to see detailed technical analysis</div>
+                            <div style="margin-top: 20px; font-size: 14px;">
+                                Analysis includes 10 technical indicators:<br>
+                                RSI, MACD, Stochastic, ADX, CCI, SMA, EMA, WMA, Bollinger Bands, Volume MA
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LSTM Analysis Section -->
+        <div id="lstm-section" style="display: none;">
+            <div class="technical-section">
+                <div class="technical-header">
+                    <h2>🤖 LSTM Price Prediction</h2>
+                </div>
+
+                <div class="technical-controls">
+                    <input
+                        type="text"
+                        id="lstmSymbolInput"
+                        placeholder="Enter symbol (e.g., BTCUSDT, ETHUSDT)"
+                        value="BTCUSDT"
+                        style="padding: 10px; border: 2px solid #ddd; border-radius: 5px; width: 250px; font-family: inherit;"
+                    >
+                    <button
+                        onclick="performLSTMPrediction()"
+                        id="lstmPredictBtn"
+                        style="padding: 10px 30px; background: #ff1493; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 10px;"
+                    >
+                        🔮 Predict Price
+                    </button>
+                </div>
+
+                <div id="lstm-results" style="margin-top: 20px;">
+                    <p style="color: #999; text-align: center; padding: 20px;">
+                        📝 Enter a cryptocurrency symbol and click "Predict Price" to see LSTM predictions<br>
+                        <span style="font-size: 0.9rem;">Try: BTCUSDT, ETHUSDT, BNBUSDT</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Sentiment Analysis Section -->
+<div id="sentiment-section" style="display: none;">
+    <div class="header">
+        <div class="header-title">💭 Sentiment Analysis</div>
+    </div>
+
+    <div class="ta-container">
+        <div class="ta-selector">
+            <div>
+                <input type="text" id="sentiment-symbol-input"
+                       placeholder="Enter crypto symbol (e.g., BTC, ETH)"
+                       onkeypress="if(event.key==='Enter') analyzeSentiment()">
+                <button onclick="analyzeSentiment()">Analyze Sentiment</button>
+                <button onclick="getCombinedAnalysisDashboard()"
+                        style="background: rgba(255, 105, 208, 0.8);">
+                    🎯 Combined Analysis
+                </button>
+            </div>
+        </div>
+
+        <div id="sentiment-results">
+            <div class="messages-container">
+                <div class="empty-state">
+                    <div style="font-size: 48px; margin-bottom: 20px;">💭</div>
+                    <div>Enter a cryptocurrency symbol to see sentiment analysis</div>
+                    <div style="margin-top: 20px; font-size: 14px;">
+                        Analyzes news, social media, and market sentiment<br>
+                        Uses VADER, TextBlob, and keyword-based NLP
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="onchain-section" style="display: none;">
+    <div class="header">
+        <div class="header-title">🔗 On-Chain Metrics</div>
+    </div>
+
+    <div class="ta-container">
+        <div class="ta-selector">
+            <div>
+                <input type="text" id="onchain-symbol-input"
+                       placeholder="Enter crypto symbol (e.g., BTC, ETH)"
+                       onkeypress="if(event.key==='Enter') analyzeOnChain()">
+                <button onclick="analyzeOnChain()">Analyze On-Chain</button>
+                <button onclick="getCombinedAllAnalysis()"
+                        style="background: rgba(255, 105, 208, 0.8);">
+                    🎯 Full Combined Analysis
+                </button>
+            </div>
+        </div>
+
+        <div id="onchain-results">
+            <div class="messages-container">
+                <div class="empty-state">
+                    <div style="font-size: 48px; margin-bottom: 20px;">🔗</div>
+                    <div>Enter a cryptocurrency symbol to see on-chain metrics</div>
+                    <div style="margin-top: 20px; font-size: 14px;">
+                        Analyzes blockchain data: active addresses, whale movements,<br>
+                        exchange flows, hash rate, NVT ratio, and more
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Info Panel -->
+    <div class="info-panel">
+        <div class="user-badge" style="width: 60px; height: 60px; margin: 0 auto 20px; font-size: 24px;">SN</div>
+
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 12px; opacity: 0.7;">Name:</div>
+            <div style="font-size: 18px; font-weight: 600;">Stanislav Nichevski</div>
+        </div>
+
+        <div class="info-section">
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 15px;">Account Info</div>
+            <div style="font-size: 12px; opacity: 0.7; margin-bottom: 5px;">Joined: 01.12.2025</div>
+            <div style="font-size: 12px; opacity: 0.7;">Assets Total: $<span id="info-panel-total">0.00</span></div>
+        </div>
+
+        <div class="info-section">
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 15px;">Assets</div>
+            <div id="info-panel-assets">
+                <div style="font-size: 14px; opacity: 0.6; padding: 20px 0; text-align: center;">No assets added yet</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Asset Selector Modal -->
+    <div id="assetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Select Cryptocurrency to Follow</div>
+                <button class="close-button" onclick="closeAssetSelector()">&times;</button>
+            </div>
+            <div class="modal-search">
+                <input type="text" id="symbolSearch" placeholder="Search cryptocurrencies..." onkeyup="filterSymbols()">
+            </div>
+            <div class="modal-body">
+                <div id="symbolList" class="symbol-list">
+                    <div class="loading-text">Loading cryptocurrencies...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        let currentAnalysis = null;
+        let currentTimeframe = '1_day';
+        let walletAssets = [];
+
+        function showPage(pageName) {
+    // Hide all pages
+    document.querySelectorAll('.page').forEach(page => {
+        page.style.display = 'none';
+    });
+
+    // Also hide special sections
+    document.getElementById('lstm-section').style.display = 'none';
+    document.getElementById('sentiment-section').style.display = 'none';
+    document.getElementById('onchain-section').style.display = 'none';
+
+    // Remove active from all nav items
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    // Show the requested page
+    document.getElementById(pageName + '-page').style.display = 'block';
+
+    // Load data if needed
+    if (pageName === 'trade') {
+        loadLatestPrices();
+    }
+}
+
+        async function loadLatestPrices() {
+            const container = document.getElementById('live-trade-content');
+
+            container.innerHTML = `
+                <div class="messages-container">
+                    <div class="empty-state">
+                        <div class="loading-spinner"></div>
+                        <div style="margin-top: 20px;">Loading cryptocurrency data from database...</div>
+                    </div>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/latest-prices`);
+                const result = await response.json();
+
+                if (result.success) {
+                    displayLatestPrices(result.data);
+                    console.log('Loaded latest prices:', result.data.length, 'cryptocurrencies');
+                } else {
+                    displayError('Failed to load data: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error loading prices:', error);
+                displayError('Could not connect to database. Make sure Flask backend is running on http://127.0.0.1:5000');
+            }
+        }
+
+        function displayLatestPrices(cryptos) {
+            const container = document.getElementById('live-trade-content');
+
+            if (!cryptos || cryptos.length === 0) {
+                container.innerHTML = `
+                    <div class="messages-container">
+                        <div class="empty-state">
+                            <div style="font-size: 48px; margin-bottom: 20px;"></div>
+                            <div>No cryptocurrency data found in database</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="crypto-grid">';
+
+            cryptos.forEach(crypto => {
+                const change = ((crypto.current_price - crypto.open) / crypto.open * 100).toFixed(2);
+                const changeClass = change >= 0 ? 'positive' : 'negative';
+                const changeSymbol = change >= 0 ? '▲' : '▼';
+
+                html += `
+                    <div class="crypto-card" onclick="showCryptoTA('${crypto.symbol}')">
+                        <div class="crypto-header">
+                            <div class="crypto-symbol">${crypto.symbol}</div>
+                            <div class="crypto-change ${changeClass}">
+                                ${changeSymbol} ${Math.abs(change)}%
+                            </div>
+                        </div>
+                        <div class="crypto-price">${crypto.current_price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        <div class="crypto-stats">
+                            <div>Open: ${crypto.open.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            <div>High: ${crypto.high.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            <div>Low: ${crypto.low.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            <div>Volume: ${(crypto.volume / 1000000).toFixed(2)}M</div>
+                        </div>
+                        <div class="crypto-date">Updated: ${crypto.date}</div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function displayError(message) {
+            const container = document.getElementById('live-trade-content');
+            container.innerHTML = `
+                <div class="error-message">
+                    <div style="font-size: 20px; margin-bottom: 10px;">Error</div>
+                    <div>${message}</div>
+                    <div style="margin-top: 15px; font-size: 14px; opacity: 0.8;">
+                        Make sure your Flask backend is running: <code>python app_updated.py</code>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showCryptoTA(symbol) {
+            document.getElementById('ta-symbol-input').value = symbol;
+            showPage('technical');
+            analyzeCrypto();
+        }
+
+        function switchTimeframe(timeframe) {
+            currentTimeframe = timeframe;
+
+            document.querySelectorAll('.timeframe-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.querySelector(`[data-timeframe="${timeframe}"]`).classList.add('active');
+
+            if (currentAnalysis) {
+                displayTechnicalAnalysis(currentAnalysis, timeframe);
+            }
+        }
+
+        async function analyzeCrypto() {
+            const symbol = document.getElementById('ta-symbol-input').value.trim().toUpperCase();
+
+            if (!symbol) {
+                alert('Please enter a cryptocurrency symbol');
+                return;
+            }
+
+            const container = document.getElementById('ta-results');
+            container.innerHTML = `
+                <div class="messages-container">
+                    <div class="empty-state">
+                        <div class="loading-spinner"></div>
+                        <div style="margin-top: 20px;">Analyzing ${symbol}...</div>
+                    </div>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/technical-analysis/${symbol}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    currentAnalysis = result.data;
+                    displayTechnicalAnalysis(result.data, currentTimeframe);
+                    console.log('Technical analysis for', symbol, ':', result.data);
+                } else {
+                    displayError(result.error || 'Failed to analyze cryptocurrency');
+                }
+            } catch (error) {
+                console.error('Error analyzing crypto:', error);
+                container.innerHTML = `
+                    <div class="error-message">
+                        <div style="font-size: 20px; margin-bottom: 10px;">Error</div>
+                        <div>Could not fetch technical analysis data</div>
+                        <div style="margin-top: 15px; font-size: 14px; opacity: 0.8;">
+                            Make sure your Flask backend is running: <code>python app_updated.py</code>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function displayTechnicalAnalysis(data, timeframe) {
+            console.log('🔍 Full data object:', data);
+    console.log('🔍 Timeframe requested:', timeframe);
+    console.log('🔍 Available timeframes:', data.timeframes);
+    console.log('🔍 Specific timeframe data:', data.timeframes ? data.timeframes[timeframe] : 'MISSING');
+            const analysis = data.timeframes[timeframe];
+
+            if (!analysis || analysis.error) {
+                document.getElementById('ta-results').innerHTML = `
+                    <div class="error-message">
+                        <div style="font-size: 20px; margin-bottom: 10px;">Error</div>
+                        <div>${analysis ? analysis.error : 'No data available for this timeframe'}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const summary = analysis.summary;
+            const oscillators = analysis.oscillators;
+            const movingAverages = analysis.moving_averages;
+            const priceInfo = analysis.price_info;
+
+            let recommendationClass = 'recommendation-hold';
+            if (summary.recommendation.includes('BUY')) {
+                recommendationClass = 'recommendation-buy';
+            } else if (summary.recommendation.includes('SELL')) {
+                recommendationClass = 'recommendation-sell';
+            }
+
+            let html = `
+                <div class="ta-summary">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h2>${data.symbol}</h2>
+                            <div style="font-size: 36px; font-weight: 700; margin: 10px 0;">
+                                ${priceInfo.current_price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            </div>
+                            <div style="opacity: 0.7; font-size: 14px;">as of ${priceInfo.date}</div>
+                        </div>
+                        <div>
+                            <div class="recommendation-badge ${recommendationClass}">
+                                ${summary.recommendation}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="signals-bar">
+                        <div class="signal-count">
+                            <div class="number" style="color: #90ee90;">${summary.buy_signals}</div>
+                            <div class="label">BUY Signals</div>
+                        </div>
+                        <div class="signal-count">
+                            <div class="number" style="color: #ff6347;">${summary.sell_signals}</div>
+                            <div class="label">SELL Signals</div>
+                        </div>
+                        <div class="signal-count">
+                            <div class="number" style="color: #ffd700;">${summary.hold_signals}</div>
+                            <div class="label">HOLD Signals</div>
+                        </div>
+                    </div>
+
+                    <div class="ta-section-title">Oscillators</div>
+                    <div class="indicators-grid">
+            `;
+
+            // Display Oscillators
+            for (const [name, data] of Object.entries(oscillators)) {
+                const signalClass = data.signal === 'BUY' ? 'signal-buy' :
+                                   data.signal === 'SELL' ? 'signal-sell' : 'signal-hold';
+
+                let valueDisplay = '';
+                if (name === 'MACD') {
+                    valueDisplay = `
+                        <div>MACD: ${data.macd ? data.macd.toFixed(2) : 'N/A'}</div>
+                        <div>Signal: ${data.signal_line ? data.signal_line.toFixed(2) : 'N/A'}</div>
+                        <div>Histogram: ${data.histogram ? data.histogram.toFixed(2) : 'N/A'}</div>
+                    `;
+                } else if (name === 'Stochastic') {
+                    valueDisplay = `
+                        <div>%K: ${data.k ? data.k.toFixed(2) : 'N/A'}</div>
+                        <div>%D: ${data.d ? data.d.toFixed(2) : 'N/A'}</div>
+                    `;
+                } else if (name === 'ADX') {
+                    valueDisplay = `
+                        <div>ADX: ${data.value ? data.value.toFixed(2) : 'N/A'}</div>
+                        <div>+DI: ${data.plus_di ? data.plus_di.toFixed(2) : 'N/A'}</div>
+                        <div>-DI: ${data.minus_di ? data.minus_di.toFixed(2) : 'N/A'}</div>
+                    `;
+                } else {
+                    valueDisplay = data.value ? data.value.toFixed(2) : 'N/A';
+                }
+
+                html += `
+                    <div class="indicator-card">
+                        <div class="indicator-header">
+                            <div class="indicator-name">${name}</div>
+                            <div class="indicator-signal ${signalClass}">${data.signal}</div>
+                        </div>
+                        <div class="indicator-value">${valueDisplay}</div>
+                        <div class="indicator-description">${data.description}</div>
+                    </div>
+                `;
+            }
+
+            html += `
+                    </div>
+
+                    <div class="ta-section-title">Moving Averages</div>
+                    <div class="indicators-grid">
+            `;
+
+            // Display Moving Averages
+            for (const [name, data] of Object.entries(movingAverages)) {
+                const signalClass = data.signal === 'BUY' || data.signal === 'STRONG' ? 'signal-buy' :
+                                   data.signal === 'SELL' || data.signal === 'WEAK' ? 'signal-sell' : 'signal-hold';
+
+                let valueDisplay = '';
+                if (name === 'Bollinger_Bands') {
+                    valueDisplay = `
+                        <div>Upper: ${data.upper ? data.upper.toFixed(2) : 'N/A'}</div>
+                        <div>Middle: ${data.middle ? data.middle.toFixed(2) : 'N/A'}</div>
+                        <div>Lower: ${data.lower ? data.lower.toFixed(2) : 'N/A'}</div>
+                    `;
+                } else if (name === 'Volume_MA') {
+                    valueDisplay = `
+                        <div>Avg Volume: ${data.value ? (data.value / 1000000).toFixed(2) + 'M' : 'N/A'}</div>
+                        <div>Current: ${data.current_volume ? (data.current_volume / 1000000).toFixed(2) + 'M' : 'N/A'}</div>
+                    `;
+                } else {
+                    valueDisplay = data.value ? data.value.toFixed(2) : 'N/A';
+                }
+
+                html += `
+                    <div class="indicator-card">
+                        <div class="indicator-header">
+                            <div class="indicator-name">${name.replace('_', ' ')}</div>
+                            <div class="indicator-signal ${signalClass}">${data.signal}</div>
+                        </div>
+                        <div class="indicator-value">${valueDisplay}</div>
+                        <div class="indicator-description">${data.description}</div>
+                    </div>
+                `;
+            }
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('ta-results').innerHTML = html;
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/api/stats`);
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('db-stats').textContent =
+                        `Database: ${result.stats.total_records.toLocaleString()} records, ${result.stats.total_cryptocurrencies} cryptocurrencies`;
+                    console.log('Database stats:', result.stats);
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadTopMovers() {
+            try {
+                const response = await fetch(`${API_BASE}/api/top-movers`);
+                const result = await response.json();
+
+                if (result.success) {
+                    console.log('Top movers (biggest price changes):', result.data);
+                }
+            } catch (error) {
+                console.error('Error loading top movers:', error);
+            }
+        }
+
+        // Wallet Management Functions
+        async function loadWallet() {
+            try {
+                const result = await window.storage.get('wallet-assets');
+                if (result && result.value) {
+                    walletAssets = JSON.parse(result.value);
+                    console.log('Loaded wallet:', walletAssets.length, 'assets');
+                } else {
+                    walletAssets = [];
+                    console.log(' Starting with empty wallet');
+                }
+                renderWallet();
+            } catch (error) {
+                console.log(' No saved wallet found, starting fresh');
+                walletAssets = [];
+                renderWallet();
+            }
+        }
+
+        async function saveWallet() {
+            try {
+                await window.storage.set('wallet-assets', JSON.stringify(walletAssets));
+                console.log(' Wallet saved');
+            } catch (error) {
+                console.error(' Error saving wallet:', error);
+            }
+        }
+
+        function renderWallet() {
+            const grid = document.getElementById('wallet-assets-grid');
+
+            // Start with the add button
+            let html = `
+                <div class="asset-card" style="display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="openAssetSelector()">
+                    <div style="text-align: center;">
+                        <div style="font-size: 40px; margin-bottom: 10px;">+</div>
+                        <div>Add new asset that you want to follow</div>
+                    </div>
+                </div>
+            `;
+
+            // Add all wallet assets
+            walletAssets.forEach(asset => {
+                const changeColor = asset.change >= 0 ? '#90ee90' : '#ff6347';
+                const changeSymbol = asset.change >= 0 ? '▲' : '▼';
+
+                html += `
+                    <div class="asset-card">
+                        <div class="asset-header">
+                            <div class="asset-name">${asset.symbol}</div>
+                            <button onclick="removeFromWallet('${asset.symbol}')"
+                                    style="background: rgba(255, 99, 71, 0.6); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;"
+                                    onmouseover="this.style.background='rgba(255, 99, 71, 0.9)'; this.style.transform='scale(1.1)'"
+                                    onmouseout="this.style.background='rgba(255, 99, 71, 0.6)'; this.style.transform='scale(1)'">
+                                ×
+                            </button>
+                        </div>
+                        <div class="asset-amount">$ ${asset.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        <div class="asset-change">
+                            <span style="color: ${changeColor};">${changeSymbol} ${Math.abs(asset.change)}%</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+            updateTotalAssets();
+            updateInfoPanel();
+        }
+
+        async function removeFromWallet(symbol) {
+            if (confirm(`Remove ${symbol} from your wallet?`)) {
+                walletAssets = walletAssets.filter(asset => asset.symbol !== symbol);
+                await saveWallet();
+                renderWallet();
+                console.log('Removed', symbol, 'from wallet');
+            }
+        }
+
+        async function clearWallet() {
+            if (confirm('Are you sure you want to clear your entire wallet? This will remove all tracked assets.')) {
+                walletAssets = [];
+                await saveWallet();
+                renderWallet();
+                console.log('Wallet cleared');
+            }
+        }
+
+        function updateTotalAssets() {
+            const total = walletAssets.reduce((sum, asset) => sum + asset.price, 0);
+            document.getElementById('total-value').textContent = total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('info-panel-total').textContent = total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        function updateInfoPanel() {
+            const container = document.getElementById('info-panel-assets');
+
+            if (walletAssets.length === 0) {
+                container.innerHTML = '<div style="font-size: 14px; opacity: 0.6; padding: 20px 0; text-align: center;">No assets added yet</div>';
+                return;
+            }
+
+            let html = '';
+            walletAssets.forEach(asset => {
+                const changeColor = asset.change >= 0 ? '#90ee90' : '#ff6347';
+                const changeSymbol = asset.change >= 0 ? '▲' : '▼';
+
+                html += `
+                    <div class="asset-list-item">
+                        <span>${asset.symbol}</span>
+                        <span style="color: ${changeColor};">${changeSymbol} ${Math.abs(asset.change)}%</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+
+        window.addEventListener('load', function() {
+           checkAuth();
+            console.log('CryptoPinkPatrol Prototype Loaded');
+            console.log('Connecting to database...');
+            console.log('Technical Analysis Module Active');
+            loadWallet();
+            loadStats();
+            loadTopMovers();
+        });
+
+        // Asset Selector Modal Functions
+        let availableSymbols = [];
+
+        async function openAssetSelector() {
+            const modal = document.getElementById('assetModal');
+            modal.style.display = 'block';
+
+            // Load symbols if not already loaded
+            if (availableSymbols.length === 0) {
+                await loadAvailableSymbols();
+            } else {
+                displaySymbols(availableSymbols);
+            }
+        }
+
+        function checkAuth() {
+    const isLoggedIn = sessionStorage.getItem('loggedIn');
+    if (!isLoggedIn || isLoggedIn !== 'true') {
+        // Not logged in, redirect to login page
+        window.location.href = '/';
+    }
+}
+
+        function closeAssetSelector() {
+            const modal = document.getElementById('assetModal');
+            modal.style.display = 'none';
+            document.getElementById('symbolSearch').value = '';
+        }
+        function handleLogout() {
+    if (confirm('Are you sure you want to log out?')) {
+        // Clear session storage
+        sessionStorage.removeItem('loggedIn');
+        sessionStorage.removeItem('username');
+
+        console.log('User logged out');
+
+        // Redirect to login page
+        window.location.href = '/';
+    }
+    }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('assetModal');
+            if (event.target == modal) {
+                closeAssetSelector();
+            }
+        }
+
+        async function loadAvailableSymbols() {
+            const symbolList = document.getElementById('symbolList');
+            symbolList.innerHTML = '<div class="loading-text">Loading cryptocurrencies...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/latest-prices`);
+                const result = await response.json();
+
+                if (result.success) {
+                    availableSymbols = result.data.map(crypto => ({
+                        symbol: crypto.symbol,
+                        price: crypto.current_price,
+                        change: ((crypto.current_price - crypto.open) / crypto.open * 100).toFixed(2)
+                    }));
+
+                    // Sort alphabetically
+                    availableSymbols.sort((a, b) => a.symbol.localeCompare(b.symbol));
+
+                    displaySymbols(availableSymbols);
+                    console.log(' Loaded', availableSymbols.length, 'cryptocurrencies');
+                } else {
+                    symbolList.innerHTML = '<div class="loading-text">Failed to load cryptocurrencies</div>';
+                }
+            } catch (error) {
+                console.error(' Error loading symbols:', error);
+                symbolList.innerHTML = '<div class="loading-text">Error loading cryptocurrencies. Make sure the backend is running.</div>';
+            }
+        }
+
+        function displaySymbols(symbols) {
+            const symbolList = document.getElementById('symbolList');
+
+            if (symbols.length === 0) {
+                symbolList.innerHTML = '<div class="loading-text">No cryptocurrencies found</div>';
+                return;
+            }
+
+            let html = '';
+            symbols.forEach(crypto => {
+                const changeColor = crypto.change >= 0 ? '#90ee90' : '#ff6347';
+                const changeSymbol = crypto.change >= 0 ? '▲' : '▼';
+
+                html += `
+                    <div class="symbol-item" onclick="selectSymbol('${crypto.symbol}')">
+                        <div class="symbol-item-name">${crypto.symbol}</div>
+                        <div class="symbol-item-info">${crypto.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        <div class="symbol-item-info" style="color: ${changeColor}">
+                            ${changeSymbol} ${Math.abs(crypto.change)}%
+                        </div>
+                    </div>
+                `;
+            });
+
+            symbolList.innerHTML = html;
+        }
+
+        function filterSymbols() {
+            const searchTerm = document.getElementById('symbolSearch').value.toUpperCase();
+
+            if (searchTerm === '') {
+                displaySymbols(availableSymbols);
+            } else {
+                const filtered = availableSymbols.filter(crypto =>
+                    crypto.symbol.includes(searchTerm)
+                );
+                displaySymbols(filtered);
+            }
+        }
+
+        function selectSymbol(symbol) {
+            console.log('Selected symbol:', symbol);
+
+            // Check if already in wallet
+            if (walletAssets.some(asset => asset.symbol === symbol)) {
+                alert(`${symbol} is already in your wallet!`);
+                closeAssetSelector();
+                return;
+            }
+
+            // Add to wallet
+            const cryptoData = availableSymbols.find(c => c.symbol === symbol);
+            if (cryptoData) {
+                walletAssets.push(cryptoData);
+                saveWallet();
+                renderWallet();
+            }
+
+            // Close modal
+            closeAssetSelector();
+
+            // Show success message
+            alert(`Added ${symbol} to your wallet!`);
+        }
+        // LSTM Analysis Functions
+async function performLSTMPrediction() {
+    const symbolInput = document.getElementById('lstmSymbolInput');
+    const resultsDiv = document.getElementById('lstm-results');
+    const predictBtn = document.getElementById('lstmPredictBtn');
+
+    const symbol = symbolInput.value.trim().toUpperCase();
+
+    if (!symbol) {
+        resultsDiv.innerHTML = '<div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px;">❌ Please enter a symbol (e.g., BTCUSDT)</div>';
+        return;
+    }
+
+    // Show loading
+    predictBtn.disabled = true;
+    resultsDiv.innerHTML = '<div style="text-align: center; padding: 30px; color: #ff1493; font-weight: bold;">⏳ Training LSTM model... (30-60 seconds)</div>';
+
+    try {
+        const url = `/api/lstm-prediction/${symbol}?lookback=30&days_ahead=7`;
+        console.log('Calling:', url);
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        console.log('Response:', data);
+
+        if (!data.success) {
+            resultsDiv.innerHTML = `<div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px;">❌ Error: ${data.error || 'Unknown error'}</div>`;
+            predictBtn.disabled = false;
+            return;
+        }
+
+        // Display results
+        displayLSTMPrediction(data.data, resultsDiv);
+
+    } catch (error) {
+        console.error('Fetch error:', error);
+        resultsDiv.innerHTML = `<div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px;">❌ Connection Error: ${error.message}</div>`;
+    }
+
+    predictBtn.disabled = false;
+}
+
+function displayLSTMPrediction(data, container) {
+    const predictions = data.predictions?.predictions || [];
+    const metrics = data.metrics || {};
+    const modelInfo = data.model_info || {};
+    const currentPrice = data.predictions?.current_price || 0;
+
+    let html = `<div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px;">✅ LSTM Model trained successfully!</div>`;
+
+    html += `<div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px; font-size: 0.9rem; color: #666;">
+        <strong>Model:</strong> 3-Layer LSTM |
+        <strong>Training:</strong> ${modelInfo.training_samples || '?'} |
+        <strong>Testing:</strong> ${modelInfo.testing_samples || '?'} |
+        <strong>Lookback:</strong> ${modelInfo.lookback_period || 30} days
+    </div>`;
+
+    // Metrics
+    html += `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; border-left: 4px solid #ff1493; text-align: center;">
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Current Price</div>
+            <div style="font-size: 1.5rem; font-weight: bold; color: #ff1493;">$${currentPrice.toFixed(2)}</div>
+        </div>
+        <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; border-left: 4px solid #ff1493; text-align: center;">
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">RMSE</div>
+            <div style="font-size: 1.5rem; font-weight: bold; color: #ff1493;">${metrics.rmse?.toFixed(4) || '--'}</div>
+        </div>
+        <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; border-left: 4px solid #ff1493; text-align: center;">
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">MAPE</div>
+            <div style="font-size: 1.5rem; font-weight: bold; color: #ff1493;">${(metrics.mape * 100)?.toFixed(2) || '--'}%</div>
+        </div>
+        <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; border-left: 4px solid #ff1493; text-align: center;">
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">R² Score</div>
+            <div style="font-size: 1.5rem; font-weight: bold; color: #ff1493;">${metrics.r2?.toFixed(4) || '--'}</div>
+        </div>
+    </div>`;
+
+    // Predictions
+    html += `<div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #ff1493;">
+        <div style="font-size: 1.1rem; color: #333; margin-bottom: 15px; font-weight: bold;">📈 7-Day Price Forecast</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px;">`;
+
+    predictions.forEach(pred => {
+        const arrow = pred.trend === 'UP' ? '📈' : '📉';
+        const color = pred.trend === 'UP' ? '#28a745' : '#dc3545';
+
+        html += `<div style="background: linear-gradient(135deg, #ff1493 0%, #c71585 100%); color: white; padding: 12px; border-radius: 5px; text-align: center;">
+            <div style="font-size: 0.85rem; margin-bottom: 5px;">Day ${pred.day}</div>
+            <div style="font-size: 1.1rem; font-weight: bold; margin-bottom: 5px;">$${pred.predicted_price?.toFixed(2) || '--'}</div>
+            <div style="font-size: 0.9rem; font-weight: bold; color: ${color};">${arrow} ${pred.change_percent?.toFixed(2) || '--'}%</div>
+        </div>`;
+    });
+
+    html += `</div></div>`;
+
+    container.innerHTML = html;
+}
+
+
+function showLSTMAnalysis() {
+    // Handle LSTM analysis button click
+    const symbolInput = document.getElementById('ta-symbol-input');
+
+    if (!symbolInput) {
+        alert('Error: Cannot find symbol input. Make sure symbolInput element exists.');
+        return;
+    }
+
+    const symbol = symbolInput.value.trim().toUpperCase();
+
+    if (!symbol) {
+        alert('Please enter a cryptocurrency symbol (e.g., BTCUSDT)');
+        return;
+    }
+
+    const resultsDiv = document.getElementById('analysisResults');
+    if (!resultsDiv) {
+        alert('Error: Cannot find results container.');
+        return;
+    }
+
+    resultsDiv.innerHTML = '<div class="lstm-loading">⏳ Training LSTM model and generating predictions...</div>';
+
+    performLSTMPrediction(symbol, 30, 7).then(results => {
+        if (results) {
+            const html = displayLSTMPrediction(results);
+            resultsDiv.innerHTML = html;
+        } else {
+            resultsDiv.innerHTML = '<div class="lstm-error">❌ Failed to generate LSTM predictions. Please check the symbol and try again.</div>';
+        }
+    });
+}
+
+function showPageLSTM() {
+    document.getElementById('dashboard-page').style.display = 'none';
+    document.getElementById('wallet-page').style.display = 'none';
+    document.getElementById('trade-page').style.display = 'none';
+    document.getElementById('technical-page').style.display = 'none';
+    document.getElementById('lstm-section').style.display = 'block';
+    document.getElementById('sentiment-section').style.display = 'none';
+    document.getElementById('onchain-section').style.display = 'none';  // ADD THIS LINE
+
+    // Update active nav item
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    event.target.closest('.nav-item').classList.add('active');
+}
+
+        // ==================== SENTIMENT ANALYSIS FUNCTIONS ====================
+
+function showPageSentiment() {
+    // Hide all pages
+    document.getElementById('dashboard-page').style.display = 'none';
+    document.getElementById('wallet-page').style.display = 'none';
+    document.getElementById('trade-page').style.display = 'none';
+    document.getElementById('technical-page').style.display = 'none';
+    document.getElementById('lstm-section').style.display = 'none';
+    document.getElementById('sentiment-section').style.display = 'block';
+    document.getElementById('onchain-section').style.display = 'none';  // ADD THIS LINE
+
+    // Update active nav item
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    event.target.closest('.nav-item').classList.add('active');
+}
+
+async function analyzeSentiment() {
+    const symbol = document.getElementById('sentiment-symbol-input').value.trim().toUpperCase();
+
+    if (!symbol) {
+        alert('Please enter a cryptocurrency symbol');
+        return;
+    }
+
+    const container = document.getElementById('sentiment-results');
+    container.innerHTML = `
+        <div class="messages-container">
+            <div class="empty-state">
+                <div class="loading-spinner"></div>
+                <div style="margin-top: 20px;">Analyzing ${symbol} sentiment...</div>
+                <div style="margin-top: 10px; font-size: 14px; opacity: 0.7;">
+                    Fetching news and social media data...<br>
+                    This may take 10-30 seconds
+                </div>
+            </div>
+        </div>
+    `;
+
+    try {
+        console.log('🔍 Fetching sentiment for:', symbol);
+        const url = `/api/sentiment/analyze/${symbol}?days_back=7`;
+        console.log('📡 URL:', url);
+
+        const response = await fetch(url);
+        console.log('📊 Response status:', response.status);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log('✅ Response data:', result);
+
+        if (result.success && result.data) {
+            displaySentimentResults(result.data);
+        } else {
+            container.innerHTML = `
+                <div class="error-message">
+                    <div style="font-size: 20px; margin-bottom: 10px;">❌ Error</div>
+                    <div>${result.error || 'Failed to analyze sentiment'}</div>
+                    <div style="margin-top: 15px; font-size: 14px;">
+                        Try these popular symbols: BTC, ETH, SOL, BNB
+                    </div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('❌ Error analyzing sentiment:', error);
+        container.innerHTML = `
+            <div class="error-message">
+                <div style="font-size: 20px; margin-bottom: 10px;">❌ Connection Error</div>
+                <div>Could not fetch sentiment analysis data</div>
+                <div style="margin-top: 15px; font-size: 14px; opacity: 0.8;">
+                    <strong>Error:</strong> ${error.message}<br><br>
+                    <strong>Troubleshooting:</strong><br>
+                    1. Make sure Flask app is running<br>
+                    2. Check console (F12) for errors<br>
+                    3. Test endpoint: <a href="/api/health/sentiment" target="_blank" style="color: white;">Health Check</a>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function displaySentimentResults(data) {
+    console.log('📊 Displaying sentiment results:', data);
+
+    // Handle case where data structure is different
+    const symbol = data.symbol || 'N/A';
+    const overallSentiment = data.overall_sentiment || 'NEUTRAL';
+    const totalArticles = data.total_articles || 0;
+    const confidence = data.confidence || 0;
+    const avgPolarity = data.average_polarity || 0;
+
+    // Calculate sentiment score (-100 to +100)
+    const sentimentScore = Math.round(avgPolarity * 100);
+
+    // Determine market mood
+    let marketMood = 'Neutral';
+    if (sentimentScore > 40) marketMood = 'Very Bullish 🚀';
+    else if (sentimentScore > 15) marketMood = 'Bullish 📈';
+    else if (sentimentScore < -40) marketMood = 'Very Bearish 📉';
+    else if (sentimentScore < -15) marketMood = 'Bearish 🔻';
+
+    // Determine trading signal
+    let tradingSignal = 'HOLD';
+    if (sentimentScore > 40 && confidence > 60) tradingSignal = 'STRONG BUY';
+    else if (sentimentScore > 15) tradingSignal = 'BUY';
+    else if (sentimentScore < -40 && confidence > 60) tradingSignal = 'STRONG SELL';
+    else if (sentimentScore < -15) tradingSignal = 'SELL';
+
+    // Get sentiment distribution
+    const distribution = data.sentiment_distribution || { POSITIVE: 0, NEGATIVE: 0, NEUTRAL: 0 };
+    const total = distribution.POSITIVE + distribution.NEGATIVE + distribution.NEUTRAL || 1;
+    const posPercent = Math.round((distribution.POSITIVE / total) * 100);
+    const negPercent = Math.round((distribution.NEGATIVE / total) * 100);
+    const neuPercent = Math.round((distribution.NEUTRAL / total) * 100);
+
+    // Get source breakdown
+    const sources = data.sources || [];
+    let newsapiCount = 0;
+    let cryptopanicCount = 0;
+
+    sources.forEach(source => {
+        if (source.source === 'NewsAPI') {
+            newsapiCount = source.articles_count || 0;
+        } else if (source.source === 'CryptoPanic') {
+            cryptopanicCount = source.posts_count || 0;
+        }
+    });
+
+    const recommendationClass = tradingSignal.includes('BUY') ? 'recommendation-buy' :
+                                tradingSignal.includes('SELL') ? 'recommendation-sell' :
+                                'recommendation-hold';
+
+    const html = `
+        <div class="ta-summary">
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <div>
+                    <h2>💭 ${symbol} Sentiment Analysis</h2>
+                    <div style="opacity: 0.7; font-size: 14px; margin-top: 5px;">
+                        ${totalArticles} articles analyzed • ${sources.length} data sources
+                    </div>
+                </div>
+                <div class="recommendation-badge ${recommendationClass}">
+                    ${tradingSignal}
+                </div>
+            </div>
+
+            <!-- Overall Sentiment Score -->
+            <div style="text-align: center; margin-bottom: 30px; padding: 30px; background: rgba(255, 255, 255, 0.1); border-radius: 12px;">
+                <div style="font-size: 16px; opacity: 0.8; margin-bottom: 10px;">Sentiment Score</div>
+                <div style="font-size: 72px; font-weight: 700; margin-bottom: 10px; color: ${sentimentScore >= 0 ? '#90ee90' : '#ff6347'};">
+                    ${sentimentScore > 0 ? '+' : ''}${sentimentScore}
+                </div>
+                <div style="font-size: 24px; font-weight: 600; margin-bottom: 10px;">
+                    ${marketMood}
+                </div>
+                <div style="font-size: 14px; opacity: 0.7;">
+                    ${overallSentiment} Sentiment • ${confidence.toFixed(1)}% Confidence
+                </div>
+            </div>
+
+            <!-- Sentiment Distribution -->
+            <div class="signals-bar" style="margin-bottom: 30px;">
+                <div class="signal-count" style="background: rgba(144, 238, 144, 0.2);">
+                    <div class="number" style="color: #90ee90;">${posPercent}%</div>
+                    <div class="label">Positive (${distribution.POSITIVE})</div>
+                </div>
+                <div class="signal-count" style="background: rgba(255, 99, 71, 0.2);">
+                    <div class="number" style="color: #ff6347;">${negPercent}%</div>
+                    <div class="label">Negative (${distribution.NEGATIVE})</div>
+                </div>
+                <div class="signal-count" style="background: rgba(255, 215, 0, 0.2);">
+                    <div class="number" style="color: #ffd700;">${neuPercent}%</div>
+                    <div class="label">Neutral (${distribution.NEUTRAL})</div>
+                </div>
+            </div>
+
+            <!-- Data Sources -->
+            <div class="ta-section-title">📰 Data Sources</div>
+            <div class="indicators-grid">
+                <!-- NewsAPI -->
+                <div class="indicator-card">
+                    <div class="indicator-header">
+                        <div class="indicator-name">📰 NewsAPI</div>
+                        <div class="indicator-signal ${newsapiCount > 0 ? 'signal-buy' : 'signal-hold'}">
+                            ${newsapiCount > 0 ? 'ACTIVE' : 'NO DATA'}
+                        </div>
+                    </div>
+                    <div class="indicator-value">${newsapiCount} Articles</div>
+                    <div class="indicator-description">
+                        News articles from major crypto publications
+                    </div>
+                </div>
+
+                <!-- CryptoPanic -->
+                <div class="indicator-card">
+                    <div class="indicator-header">
+                        <div class="indicator-name">💬 CryptoPanic</div>
+                        <div class="indicator-signal ${cryptopanicCount > 0 ? 'signal-buy' : 'signal-hold'}">
+                            ${cryptopanicCount > 0 ? 'ACTIVE' : 'NO DATA'}
+                        </div>
+                    </div>
+                    <div class="indicator-value">${cryptopanicCount} Posts</div>
+                    <div class="indicator-description">
+                        Social media and community sentiment
+                    </div>
+                </div>
+
+                <!-- Analysis Quality -->
+                <div class="indicator-card">
+                    <div class="indicator-header">
+                        <div class="indicator-name">🎯 Confidence</div>
+                        <div class="indicator-signal ${confidence > 70 ? 'signal-buy' : confidence > 40 ? 'signal-hold' : 'signal-sell'}">
+                            ${confidence > 70 ? 'HIGH' : confidence > 40 ? 'MEDIUM' : 'LOW'}
+                        </div>
+                    </div>
+                    <div class="indicator-value">${confidence.toFixed(1)}%</div>
+                    <div class="indicator-description">
+                        Analysis reliability based on data quality
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Articles Preview -->
+            ${totalArticles > 0 ? `
+                <div class="ta-section-title">📄 Recent Articles Sample</div>
+                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px;">
+                    ${sources.map(source => {
+                        const items = source.articles || source.posts || [];
+                        return items.slice(0, 3).map(item => `
+                            <div style="padding: 12px; margin-bottom: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; border-left: 3px solid ${
+                                item.sentiment === 'POSITIVE' ? '#90ee90' :
+                                item.sentiment === 'NEGATIVE' ? '#ff6347' : '#ffd700'
+                            };">
+                                <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">
+                                    ${item.title?.substring(0, 100) || 'Article title'}...
+                                </div>
+                                <div style="font-size: 12px; opacity: 0.7;">
+                                    <span style="color: ${
+                                        item.sentiment === 'POSITIVE' ? '#90ee90' :
+                                        item.sentiment === 'NEGATIVE' ? '#ff6347' : '#ffd700'
+                                    };">
+                                        ${item.sentiment}
+                                    </span>
+                                    • Polarity: ${item.polarity?.toFixed(3) || 0}
+                                    • Source: ${item.source || source.source}
+                                </div>
+                            </div>
+                        `).join('');
+                    }).join('')}
+                </div>
+            ` : ''}
+
+            <!-- Interpretation Guide -->
+            <div style="margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; font-size: 14px;">
+                <strong>💡 How to Interpret:</strong><br><br>
+                <div style="line-height: 1.8;">
+                    <strong style="color: #90ee90;">Score +40 to +100:</strong> Strong bullish sentiment - Market is very positive<br>
+                    <strong style="color: #90ee90;">Score +15 to +40:</strong> Moderate bullish - Positive outlook<br>
+                    <strong style="color: #ffd700;">Score -15 to +15:</strong> Neutral - Wait for clearer signals<br>
+                    <strong style="color: #ff6347;">Score -40 to -15:</strong> Moderate bearish - Be cautious<br>
+                    <strong style="color: #ff6347;">Score -100 to -40:</strong> Strong bearish - Market is very negative
+                </div>
+            </div>
+
+            <!-- Data Quality Note -->
+            <div style="margin-top: 20px; padding: 15px; background: rgba(255, 215, 0, 0.1); border-radius: 12px; border-left: 4px solid #ffd700; font-size: 13px;">
+                <strong>⚠️ Note:</strong> Sentiment analysis is based on ${totalArticles} articles.
+                For best results, ensure at least 10+ articles are analyzed.
+                ${totalArticles < 10 ? 'Try major cryptocurrencies like BTC, ETH, or SOL for more comprehensive analysis.' : ''}
+            </div>
+        </div>
+    `;
+
+    document.getElementById('sentiment-results').innerHTML = html;
+}
+async function getCombinedAnalysisDashboard() {
+    const symbol = document.getElementById('sentiment-symbol-input').value.trim().toUpperCase();
+
+    if (!symbol) {
+        alert('Please enter a cryptocurrency symbol');
+        return;
+    }
+
+    const container = document.getElementById('sentiment-results');
+    container.innerHTML = `
+        <div class="messages-container">
+            <div class="empty-state">
+                <div class="loading-spinner"></div>
+                <div style="margin-top: 20px;">Running combined analysis for ${symbol}...</div>
+            </div>
+        </div>
+    `;
+
+    try {
+        const response = await fetch(`/api/sentiment/combined/${symbol}`);
+        const result = await response.json();
+
+        if (result.success) {
+            displayCombinedAnalysisDashboard(result);
+        } else {
+            container.innerHTML = `
+                <div class="error-message">
+                    <div style="font-size: 20px; margin-bottom: 10px;">❌ Error</div>
+                    <div>${result.error || 'Failed to get combined analysis'}</div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error getting combined analysis:', error);
+        container.innerHTML = `
+            <div class="error-message">
+                <div style="font-size: 20px; margin-bottom: 10px;">❌ Connection Error</div>
+                <div>Could not fetch combined analysis</div>
+            </div>
+        `;
+    }
+}
+
+
+function displayCombinedAnalysisDashboard(data) {
+    const recommendationClass = data.overall_recommendation === 'BUY' ? 'recommendation-buy' :
+                                data.overall_recommendation === 'SELL' ? 'recommendation-sell' :
+                                'recommendation-hold';
+
+    const html = `
+        <div class="ta-summary">
+            <!-- Overall Recommendation -->
+            <div style="text-align: center; padding: 40px; background: rgba(255, 255, 255, 0.1); border-radius: 16px; margin-bottom: 30px;">
+                <div style="font-size: 20px; opacity: 0.8; margin-bottom: 15px;">Overall Recommendation</div>
+                <div class="recommendation-badge ${recommendationClass}" style="font-size: 48px; padding: 20px 40px;">
+                    ${data.overall_recommendation}
+                </div>
+                <div style="font-size: 18px; margin-top: 20px; opacity: 0.9;">
+                    ${data.confidence}
+                </div>
+            </div>
+
+            <!-- Individual Signals -->
+            <div class="ta-section-title">Individual Signal Analysis</div>
+            <div class="signals-bar">
+                <div class="signal-count">
+                    <div style="font-size: 18px; margin-bottom: 10px;">💭 Sentiment</div>
+                    <div class="recommendation-badge ${data.individual_signals.sentiment.includes('BUY') ? 'recommendation-buy' :
+                         data.individual_signals.sentiment.includes('SELL') ? 'recommendation-sell' : 'recommendation-hold'}"
+                         style="font-size: 16px; padding: 8px 16px;">
+                        ${data.individual_signals.sentiment}
+                    </div>
+                </div>
+                <div class="signal-count">
+                    <div style="font-size: 18px; margin-bottom: 10px;">📊 Technical</div>
+                    <div class="recommendation-badge ${data.individual_signals.technical.includes('BUY') ? 'recommendation-buy' :
+                         data.individual_signals.technical.includes('SELL') ? 'recommendation-sell' : 'recommendation-hold'}"
+                         style="font-size: 16px; padding: 8px 16px;">
+                        ${data.individual_signals.technical}
+                    </div>
+                </div>
+                <div class="signal-count">
+                    <div style="font-size: 18px; margin-bottom: 10px;">🔗 On-Chain</div>
+                    <div class="recommendation-badge ${data.individual_signals.onchain.includes('BUY') ? 'recommendation-buy' :
+                         data.individual_signals.onchain.includes('SELL') ? 'recommendation-sell' : 'recommendation-hold'}"
+                         style="font-size: 16px; padding: 8px 16px;">
+                        ${data.individual_signals.onchain}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Breakdown -->
+            <div class="indicators-grid" style="margin-top: 30px;">
+                <!-- Sentiment Details -->
+                <div class="indicator-card">
+                    <div class="indicator-header">
+                        <div class="indicator-name">💭 Sentiment Analysis</div>
+                        <div class="indicator-signal ${data.sentiment_analysis.sentiment === 'POSITIVE' ? 'signal-buy' :
+                             data.sentiment_analysis.sentiment === 'NEGATIVE' ? 'signal-sell' : 'signal-hold'}">
+                            ${data.sentiment_analysis.sentiment || 'N/A'}
+                        </div>
+                    </div>
+                    <div class="indicator-value">Score: ${data.sentiment_analysis.score || 0}/100</div>
+                    <div class="indicator-description">
+                        ${data.sentiment_analysis.market_mood || 'N/A'}<br>
+                        ${data.sentiment_analysis.sources_analyzed || 0} sources analyzed
+                    </div>
+                </div>
+
+                <!-- Technical Details -->
+                <div class="indicator-card">
+                    <div class="indicator-header">
+                        <div class="indicator-name">📊 Technical Analysis</div>
+                        <div class="indicator-signal ${data.technical_analysis.recommendation?.includes('BUY') ? 'signal-buy' :
+                             data.technical_analysis.recommendation?.includes('SELL') ? 'signal-sell' : 'signal-hold'}">
+                            ${data.technical_analysis.recommendation || 'N/A'}
+                        </div>
+                    </div>
+                    <div class="indicator-value">
+                        ${data.technical_analysis.error ? 'Data unavailable' :
+                          `${data.technical_analysis.buy_signals || 0} Buy / ${data.technical_analysis.sell_signals || 0} Sell`}
+                    </div>
+                    <div class="indicator-description">
+                        ${data.technical_analysis.error || 'RSI, MACD, Moving Averages'}
+                    </div>
+                </div>
+
+                <!-- On-Chain Details -->
+                <div class="indicator-card">
+                    <div class="indicator-header">
+                        <div class="indicator-name">🔗 On-Chain Metrics</div>
+                        <div class="indicator-signal ${data.onchain_analysis.signal?.includes('BUY') ? 'signal-buy' :
+                             data.onchain_analysis.signal?.includes('SELL') ? 'signal-sell' : 'signal-hold'}">
+                            ${data.onchain_analysis.signal || 'N/A'}
+                        </div>
+                    </div>
+                    <div class="indicator-value">
+                        ${data.onchain_analysis.error ? 'Data unavailable' : 'Metrics analyzed'}
+                    </div>
+                    <div class="indicator-description">
+                        ${data.onchain_analysis.error || 'Whale movements, exchange flows'}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendation Guide -->
+            <div style="margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px;">
+                <strong>🎯 Trading Recommendation:</strong><br><br>
+                This combined analysis integrates sentiment, technical indicators, and on-chain metrics
+                to provide a comprehensive trading signal. Always use proper risk management and consider
+                multiple factors before making trading decisions.
+            </div>
+        </div>
+    `;
+
+    document.getElementById('sentiment-results').innerHTML = html;
+}
+// ==================== END SENTIMENT ANALYSIS ====================
+function showPageOnChain() {
+    // Hide all pages
+    document.getElementById('dashboard-page').style.display = 'none';
+    document.getElementById('wallet-page').style.display = 'none';
+    document.getElementById('trade-page').style.display = 'none';
+    document.getElementById('technical-page').style.display = 'none';
+    document.getElementById('lstm-section').style.display = 'none';
+    document.getElementById('sentiment-section').style.display = 'none';
+    document.getElementById('onchain-section').style.display = 'block';
+
+    // Update active nav item
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    event.target.closest('.nav-item').classList.add('active');
+}
+
+async function analyzeOnChain() {
+    const symbol = document.getElementById('onchain-symbol-input').value.trim().toUpperCase();
+
+    if (!symbol) {
+        alert('Please enter a cryptocurrency symbol');
+        return;
+    }
+
+    const container = document.getElementById('onchain-results');
+    container.innerHTML = `
+        <div class="messages-container">
+            <div class="empty-state">
+                <div class="loading-spinner"></div>
+                <div style="margin-top: 20px;">Analyzing ${symbol} on-chain metrics...</div>
+            </div>
+        </div>
+    `;
+
+    try {
+        const response = await fetch(`/api/onchain/analyze/${symbol}?days_back=30`);
+        const result = await response.json();
+
+        if (result.success) {
+            displayOnChainResults(result.data, symbol);
+        } else {
+            container.innerHTML = `
+                <div class="error-message">
+                    <div style="font-size: 20px; margin-bottom: 10px;">❌ Error</div>
+                    <div>${result.error || 'Failed to analyze on-chain metrics'}</div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error analyzing on-chain:', error);
+        container.innerHTML = `
+            <div class="error-message">
+                <div style="font-size: 20px; margin-bottom: 10px;">❌ Connection Error</div>
+                <div>Could not fetch on-chain data</div>
+            </div>
+        `;
+    }
+}
+
+function displayOnChainResults(data, symbol) {
+    const metrics = data.metrics;
+    const overallSignal = data.overall_signal;
+
+    const signalClass = overallSignal.includes('BULLISH') ? 'recommendation-buy' :
+                        overallSignal.includes('BEARISH') ? 'recommendation-sell' :
+                        'recommendation-hold';
+
+    let html = `
+        <div class="ta-summary">
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <div>
+                    <h2>🔗 ${symbol} On-Chain Metrics</h2>
+                    <div style="opacity: 0.7; font-size: 14px; margin-top: 5px;">
+                        Blockchain data analysis • 30 day period
+                    </div>
+                </div>
+                <div class="recommendation-badge ${signalClass}">
+                    ${overallSignal.split(' - ')[0]}
+                </div>
+            </div>
+
+            <div class="ta-section-title">📊 Network Activity</div>
+            <div class="indicators-grid">
+    `;
+
+    // Active Addresses
+   if (metrics.active_addresses?.success) {
+    const aa = metrics.active_addresses;
+    html += `
+        <div class="indicator-card">
+            <div class="indicator-header">
+                <div class="indicator-name">👥 Active Addresses</div>
+                <div class="indicator-signal ${aa.trend === 'UP' ? 'signal-buy' : 'signal-sell'}">
+                    ${aa.trend}
+                </div>
+            </div>
+            <div class="indicator-value">${aa.latest_value.toLocaleString()}</div>
+            <div class="indicator-description">
+                ${aa.interpretation}<br>
+                <small style="opacity: 0.7;">${aa.data_source || ''}</small>
+            </div>
+        </div>
+    `;
+}
+
+    // Transaction Count
+    if (metrics.transaction_count?.success) {
+        const tc = metrics.transaction_count;
+        html += `
+            <div class="indicator-card">
+                <div class="indicator-header">
+                    <div class="indicator-name">📝 Transaction Count</div>
+                    <div class="indicator-signal ${tc.trend === 'UP' ? 'signal-buy' : 'signal-sell'}">
+                        ${tc.trend}
+                    </div>
+                </div>
+                <div class="indicator-value">${tc.latest_count.toLocaleString()}</div>
+                <div class="indicator-description">7-day avg: ${tc.avg_7d.toLocaleString()}</div>
+            </div>
+        `;
+    }
+
+    // Hash Rate
+    if (metrics.hash_rate?.success) {
+        const hr = metrics.hash_rate;
+        html += `
+            <div class="indicator-card">
+                <div class="indicator-header">
+                    <div class="indicator-name">⛏️ Hash Rate</div>
+                    <div class="indicator-signal ${hr.trend === 'UP' ? 'signal-buy' : 'signal-sell'}">
+                        ${hr.trend}
+                    </div>
+                </div>
+                <div class="indicator-value">${hr.latest_hash_rate.toFixed(2)} EH/s</div>
+                <div class="indicator-description">Security: ${hr.network_security}</div>
+            </div>
+        `;
+    }
+
+    html += `</div><div class="ta-section-title">🐋 Market Behavior</div><div class="indicators-grid">`;
+
+    // Exchange Flows
+    if (metrics.exchange_flows?.success) {
+        const ef = metrics.exchange_flows;
+        const flowSignal = ef.signal === 'BULLISH' ? 'signal-buy' : 'signal-sell';
+        html += `
+            <div class="indicator-card">
+                <div class="indicator-header">
+                    <div class="indicator-name">🔄 Exchange Flows</div>
+                    <div class="indicator-signal ${flowSignal}">${ef.signal}</div>
+                </div>
+                <div class="indicator-value">
+                    Net: ${ef.net_flow > 0 ? '+' : ''}${ef.net_flow.toFixed(2)}
+                </div>
+                <div class="indicator-description">
+                    In: ${ef.latest_inflow.toFixed(2)} | Out: ${ef.latest_outflow.toFixed(2)}<br>
+                    ${ef.interpretation}
+                </div>
+            </div>
+        `;
+    }
+
+    // Whale Movements
+    if (metrics.whale_movements?.success) {
+        const wm = metrics.whale_movements;
+        html += `
+            <div class="indicator-card">
+                <div class="indicator-header">
+                    <div class="indicator-name">🐋 Whale Activity</div>
+                    <div class="indicator-signal signal-hold">${wm.whale_sentiment}</div>
+                </div>
+                <div class="indicator-value">${wm.whale_count_7d} movements</div>
+                <div class="indicator-description">
+                    Avg amount: ${wm.avg_whale_amount.toFixed(2)}
+                </div>
+            </div>
+        `;
+    }
+
+    html += `</div><div class="ta-section-title">💰 Valuation Metrics</div><div class="indicators-grid">`;
+
+    // NVT Ratio
+    if (metrics.nvt_ratio?.success) {
+        const nvt = metrics.nvt_ratio;
+        const nvtSignal = nvt.valuation_status === 'UNDERVALUED' ? 'signal-buy' :
+                         nvt.valuation_status === 'OVERVALUED' ? 'signal-sell' : 'signal-hold';
+        html += `
+            <div class="indicator-card">
+                <div class="indicator-header">
+                    <div class="indicator-name">📊 NVT Ratio</div>
+                    <div class="indicator-signal ${nvtSignal}">${nvt.valuation_status}</div>
+                </div>
+                <div class="indicator-value">${nvt.latest_nvt.toFixed(2)}</div>
+                <div class="indicator-description">Network Value to Transactions</div>
+            </div>
+        `;
+    }
+
+    // MVRV Ratio
+    if (metrics.mvrv_ratio?.success) {
+        const mvrv = metrics.mvrv_ratio;
+        const mvrvSignal = mvrv.signal.includes('UNDERVALUATION') ? 'signal-buy' :
+                          mvrv.signal.includes('OVERVALUATION') ? 'signal-sell' : 'signal-hold';
+        html += `
+            <div class="indicator-card">
+                <div class="indicator-header">
+                    <div class="indicator-name">💎 MVRV Ratio</div>
+                    <div class="indicator-signal ${mvrvSignal}">${mvrv.signal.replace('_', ' ')}</div>
+                </div>
+                <div class="indicator-value">${mvrv.latest_mvrv.toFixed(2)}</div>
+                <div class="indicator-description">Market Value to Realized Value</div>
+            </div>
+        `;
+    }
+
+    html += `
+            </div>
+
+            <!-- Interpretation Guide -->
+            <div style="margin-top: 30px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; font-size: 14px;">
+                <strong>💡 Understanding On-Chain Metrics:</strong><br><br>
+                <div style="line-height: 1.8;">
+                    <strong>Network Activity:</strong> Higher active addresses and transactions indicate growing adoption<br>
+                    <strong>Exchange Flows:</strong> Net outflow (accumulation) is bullish, net inflow (distribution) is bearish<br>
+                    <strong>Whale Activity:</strong> Large holder movements can signal major price shifts<br>
+                    <strong>NVT & MVRV:</strong> Valuation metrics help identify overvalued/undervalued conditions
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('onchain-results').innerHTML = html;
+}
+
+async function getCombinedAllAnalysis() {
+    const symbol = document.getElementById('onchain-symbol-input').value.trim().toUpperCase();
+
+    if (!symbol) {
+        alert('Please enter a cryptocurrency symbol');
+        return;
+    }
+
+    const container = document.getElementById('onchain-results');
+    container.innerHTML = `
+        <div class="messages-container">
+            <div class="empty-state">
+                <div class="loading-spinner"></div>
+                <div style="margin-top: 20px;">Running full combined analysis for ${symbol}...</div>
+                <div style="margin-top: 10px; font-size: 14px; opacity: 0.7;">
+                    Technical + Sentiment + On-Chain
+                </div>
+            </div>
+        </div>
+    `;
+
+    try {
+        const response = await fetch(`/api/combined-all/${symbol}`);
+        const result = await response.json();
+
+        if (result.success) {
+            displayCombinedAllResults(result);
+        } else {
+            container.innerHTML = `
+                <div class="error-message">
+                    <div style="font-size: 20px; margin-bottom: 10px;">❌ Error</div>
+                    <div>${result.error || 'Failed to get combined analysis'}</div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        container.innerHTML = `
+            <div class="error-message">
+                <div style="font-size: 20px; margin-bottom: 10px;">❌ Connection Error</div>
+                <div>Could not fetch combined analysis</div>
+            </div>
+        `;
+    }
+}
+
+function displayCombinedAllResults(data) {
+    const recommendationClass = data.overall_recommendation.includes('BUY') ? 'recommendation-buy' :
+                                data.overall_recommendation.includes('SELL') ? 'recommendation-sell' :
+                                'recommendation-hold';
+
+    const html = `
+        <div class="ta-summary">
+            <!-- Overall Recommendation -->
+            <div style="text-align: center; padding: 40px; background: rgba(255, 255, 255, 0.1); border-radius: 16px; margin-bottom: 30px;">
+                <div style="font-size: 20px; opacity: 0.8; margin-bottom: 15px;">🎯 Ultimate Recommendation</div>
+                <div class="recommendation-badge ${recommendationClass}" style="font-size: 48px; padding: 20px 40px;">
+                    ${data.overall_recommendation}
+                </div>
+                <div style="font-size: 18px; margin-top: 20px; opacity: 0.9;">
+                    Confidence: ${data.confidence.toFixed(1)}%
+                </div>
+                <div style="font-size: 14px; margin-top: 10px; opacity: 0.7;">
+                    Based on Technical Analysis + Sentiment Analysis + On-Chain Metrics
+                </div>
+            </div>
+
+            <!-- Individual Signals -->
+            <div class="ta-section-title">📊 Individual Analysis Breakdown</div>
+            <div class="signals-bar">
+                <div class="signal-count">
+                    <div style="font-size: 18px; margin-bottom: 10px;">📈 Technical</div>
+                    <div class="recommendation-badge ${data.technical_analysis.signal?.includes('BUY') ? 'recommendation-buy' :
+                         data.technical_analysis.signal?.includes('SELL') ? 'recommendation-sell' : 'recommendation-hold'}"
+                         style="font-size: 16px; padding: 8px 16px;">
+                        ${data.technical_analysis.signal || 'N/A'}
+                    </div>
+                    <div style="font-size: 12px; margin-top: 5px; opacity: 0.7;">
+                        ${data.technical_analysis.confidence?.toFixed(0) || 0}% confidence
+                    </div>
+                </div>
+
+                <div class="signal-count">
+                    <div style="font-size: 18px; margin-bottom: 10px;">💭 Sentiment</div>
+                    <div class="recommendation-badge ${data.sentiment_analysis.signal?.includes('BUY') ? 'recommendation-buy' :
+                         data.sentiment_analysis.signal?.includes('SELL') ? 'recommendation-sell' : 'recommendation-hold'}"
+                         style="font-size: 16px; padding: 8px 16px;">
+                        ${data.sentiment_analysis.signal || 'N/A'}
+                    </div>
+                    <div style="font-size: 12px; margin-top: 5px; opacity: 0.7;">
+                        ${data.sentiment_analysis.confidence?.toFixed(0) || 0}% confidence
+                    </div>
+                </div>
+
+                <div class="signal-count">
+                    <div style="font-size: 18px; margin-bottom: 10px;">🔗 On-Chain</div>
+                    <div class="recommendation-badge ${data.onchain_analysis.signal?.includes('BUY') ? 'recommendation-buy' :
+                         data.onchain_analysis.signal?.includes('SELL') ? 'recommendation-sell' : 'recommendation-hold'}"
+                         style="font-size: 16px; padding: 8px 16px;">
+                        ${data.onchain_analysis.signal || 'N/A'}
+                    </div>
+                    <div style="font-size: 12px; margin-top: 5px; opacity: 0.7;">
+                        ${data.onchain_analysis.confidence?.toFixed(0) || 0}% confidence
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div style="margin-top: 30px; padding: 20px; background: rgba(255, 215, 0, 0.1); border-radius: 12px; border-left: 4px solid #ffd700; font-size: 13px;">
+                <strong>⚠️ Investment Disclaimer:</strong> This combined analysis is for educational purposes only.
+                Cryptocurrency investments carry significant risk. Always conduct your own research and consult
+                with financial advisors before making investment decisions.
+            </div>
+        </div>
+    `;
+
+    document.getElementById('onchain-results').innerHTML = html;
+}
+    </script>
+</body>
+</html>

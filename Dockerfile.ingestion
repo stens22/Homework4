@@ -1,0 +1,55 @@
+# Dockerfile for Data Ingestion Service
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy data ingestion scripts
+COPY import.py .
+COPY codefilters.py .
+COPY crypto_data.csv .
+
+# Copy models if needed
+COPY models/ ./models/
+
+# Create logs directory
+RUN mkdir -p /app/logs
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+set -e\n\
+echo "🚀 Starting Data Ingestion Service..."\n\
+\n\
+# Wait for database\n\
+echo "⏳ Waiting for database..."\n\
+until pg_isready -h ${DB_HOST:-postgres} -p ${DB_PORT:-5432} -U ${DB_USER:-postgres}; do\n\
+  echo "Database is unavailable - sleeping"\n\
+  sleep 2\n\
+done\n\
+\n\
+echo "✅ Database is ready!"\n\
+\n\
+# Run initial import with CSV path as argument\n\
+echo "📥 Running initial data import..."\n\
+python import.py /app/crypto_data.csv\n\
+\n\
+# Run codefilters with scheduler\n\
+echo "🔍 Starting codefilters pipeline with scheduler..."\n\
+python codefilters.py --schedule\n\
+' > /app/start.sh && chmod +x /app/start.sh
+
+# Health check - check if process is running
+HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=3 \
+    CMD ps aux | grep -v grep | grep codefilters.py || exit 1
+
+# Run the startup script
+CMD ["/app/start.sh"]
