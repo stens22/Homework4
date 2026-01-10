@@ -325,7 +325,7 @@ def analyze_onchain(symbol):
     result, status = call_microservice(
         'onchain',
         f'/analyze/{symbol}',
-        params={'days_back': days_back}
+        params={'type': 'onchain', 'days_back': days_back}  # ← ADDED type=onchain
     )
 
     return jsonify(result), status
@@ -339,12 +339,13 @@ def get_onchain_signal(symbol):
     result, status = call_microservice(
         'onchain',
         f'/signal/{symbol}',
-        params={'days_back': days_back}
+        params={'type': 'onchain', 'days_back': days_back}  # ← ADDED type=onchain
     )
 
     return jsonify(result), status
 
 
+# Also update the combined analysis route
 @app.route('/api/combined-all/<symbol>')
 def get_combined_all(symbol):
     """Combined Technical + Sentiment + On-Chain analysis"""
@@ -353,8 +354,8 @@ def get_combined_all(symbol):
 
         # Get all signals from microservices
         technical_result, _ = call_microservice('technical', f'/signal/{symbol}', params={'timeframe': 'short'})
-        sentiment_result, _ = call_microservice('sentiment', f'/signal/{symbol}', params={'days_back': 7})
-        onchain_result, _ = call_microservice('onchain', f'/signal/{symbol}', params={'days_back': 30})
+        sentiment_result, _ = call_microservice('sentiment', f'/signal/{symbol}', params={'type': 'sentiment', 'days_back': 7})  # ← ADDED type=sentiment
+        onchain_result, _ = call_microservice('onchain', f'/signal/{symbol}', params={'type': 'onchain', 'days_back': 30})  # ← ADDED type=onchain
 
         # Calculate combined signal
         tech_val = 1 if 'BUY' in technical_result.get('signal', '') else -1 if 'SELL' in technical_result.get('signal', '') else 0
@@ -399,8 +400,6 @@ def get_combined_all(symbol):
     except Exception as e:
         logger.error(f"Error in combined analysis: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
-
-
 # ==================== HEALTH CHECK ====================
 
 @app.route('/api/health')
